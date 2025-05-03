@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { getDay, createDay, updateDay } = require("../controllers/days");
 
-router.route("/").get(getDay).post(createDay).put(updateDay);
+router.route("/").post(createDay);
+router.route("/:dayId").get(getDay).put(updateDay);
 
 module.exports = router;
