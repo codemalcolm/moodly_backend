@@ -1,19 +1,21 @@
 const mongoose = require("mongoose");
+const {Schema} = mongoose
 
-const DayEntrySchema = new mongoose.Schema({
-  date: {
+const DayEntrySchema = new Schema({
+  entryDate: {
     type: Date,
     required: true,
   },
   mood: {
     type: String,
-    enum: ["happy", "sad", "neutral", "angry", "anxious", "excited"], // adjust later
-    required: false,
+    enum: ["happy", "sad", "neutral", "angry", "anxious", "excited", "unfilled"], // adjust later
+    default: "unfilled",
+    required: true,
   },
   dailyTasks: [
     {
-      type: String, // or Schema.Types.ObjectId if referencing another collection
-      ref: "DailyTask", // optional: define if you're referencing a Task model
+      type: Schema.Types.ObjectId,
+      ref: "DailyTask",
     },
   ],
   journalEntries: [
@@ -22,10 +24,6 @@ const DayEntrySchema = new mongoose.Schema({
       ref: "JournalEntry",
     },
   ],
-  entryDate: {
-    type: Date,
-    required: true,
-  },
 });
 
 module.exports = mongoose.model("DayEntry", DayEntrySchema);
