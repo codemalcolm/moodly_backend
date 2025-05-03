@@ -1,0 +1,22 @@
+# node modules
+node_modules/
+
+# environment variables
+.env
+
+# build output
+dist/
+build/
+
+# logs
+*.log
+
+# OS/filesystem junk
+.DS_Store
+
+# coverage / test output
+coverage/
+
+# IDEs
+.vscode/
+.idea/
