@@ -5,7 +5,7 @@ const getDay = async (req, res) => {
   const { dayId } = req.params;
   const dayEntry = await DayEntry.findOne({ _id: dayId });
 
-  if(!dayEntry){
+  if (!dayEntry) {
     throw new Error(`Day with id : ${dayId} not found`);
   }
 
@@ -22,7 +22,21 @@ const createDay = async (req, res) => {
 };
 
 const updateDay = async (req, res) => {
-  res.status(StatusCodes.OK).json({ message: "updateDay visited" });
+  const { dayId } = req.params;
+
+  const { mood, dailyTasks, journalEntries } = req.body;
+
+    if (!mood && !dailyTasks && !journalEntries) {
+      throw new BadRequestError("No changes made");
+    }
+
+  const dayEntry = await DayEntry.findByIdAndUpdate(
+    {_id : dayId},
+    {...req.body},
+    { runValidators: true, new: true }
+  )
+
+  res.status(StatusCodes.OK).json({ dayEntry });
 };
 
 module.exports = { getDay, createDay, updateDay };
