@@ -1,15 +1,16 @@
 const StatusCodes = require("http-status-codes");
 const JournalEntry = require("../models/JournalEntry");
 const { BadRequestError } = require("../errors/index");
+const DayEntry = require("../models/DayEntry");
 
 const getEntries = async (req, res) => {
   res.status(StatusCodes.OK).json({ message: "getEntries visited" });
 };
 
 const createEntry = async (req, res) => {
-  // TODO - implement image upload
+  const { entryText, entryDateAndTime, dayId } = req.body;
 
-  const { entryText, entryDateAndTime } = req.body;
+
 
   if (!entryText || !entryDateAndTime) {
     throw new BadRequestError(
@@ -19,7 +20,25 @@ const createEntry = async (req, res) => {
 
   const journalEntry = await JournalEntry.create({ ...req.body });
 
-  res.status(StatusCodes.OK).json({ journalEntry });
+  const updatedDayEntry = await DayEntry.findByIdAndUpdate(
+    dayId,
+    { $push: { journalEntries: journalEntry._id } },
+    { new: true }
+  );
+
+  if(!updatedDayEntry){
+    throw new BadRequestError(
+        `Day entry with id:${dayId} doesn't exist`
+      );
+  }
+
+  res
+    .status(StatusCodes.OK)
+    .json({
+      message: "Journal Entry created and added into DayEntry",
+      journalEntry,
+      updatedDayEntry,
+    });
 };
 
 const updateEntry = async (req, res) => {
