@@ -10,8 +10,6 @@ const getEntries = async (req, res) => {
 const createEntry = async (req, res) => {
   const { entryText, entryDateAndTime, dayId } = req.body;
 
-
-
   if (!entryText || !entryDateAndTime) {
     throw new BadRequestError(
       "Please provide Journal Entry Text and entryDateAndTime"
@@ -26,23 +24,32 @@ const createEntry = async (req, res) => {
     { new: true }
   );
 
-  if(!updatedDayEntry){
-    throw new BadRequestError(
-        `Day entry with id:${dayId} doesn't exist`
-      );
+  if (!updatedDayEntry) {
+    throw new BadRequestError(`Day entry with id:${dayId} doesn't exist`);
   }
 
-  res
-    .status(StatusCodes.OK)
-    .json({
-      message: "Journal Entry created and added into DayEntry",
-      journalEntry,
-      updatedDayEntry,
-    });
+  res.status(StatusCodes.OK).json({
+    message: "Journal Entry created and added into DayEntry",
+    journalEntry,
+    updatedDayEntry,
+  });
 };
 
 const updateEntry = async (req, res) => {
-  res.status(StatusCodes.OK).json({ message: "updateEntry visited" });
+  const { journalEntryId } = req.params;
+  const { name, entryText, images } = req.body;
+
+  if (!name && !entryText && !images) {
+    throw new BadRequestError("No fields have been changed");
+  }
+
+  const journalEntry = await JournalEntry.findOneAndUpdate(
+    { _id: journalEntryId },
+    { ...req.body },
+    { runValidators: true, new: true }
+  );
+
+  res.status(StatusCodes.OK).json({journalEntry})
 };
 
 const deleteEntry = async (req, res) => {
