@@ -5,6 +5,7 @@ const DayEntrySchema = new Schema({
   entryDate: {
     type: Date,
     required: true,
+    index: true 
   },
   mood: {
     type: String,
