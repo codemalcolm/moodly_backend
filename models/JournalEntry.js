@@ -1,9 +1,16 @@
 const mongoose = require("mongoose");
+const {Schema} = mongoose;
 
-const JournalEntrySchema = new mongoose.Schema({
+const JournalEntrySchema = new Schema({
+  dayId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'DayEntry',
+    index: true
+  },
   name: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   entryText: {
