@@ -39,7 +39,7 @@ const updateEntry = async (req, res) => {
   const { journalEntryId } = req.params;
   const { name, entryText, images } = req.body;
 
-  if (!name && !entryText && !images) {
+  if (!name && !entryText && images.length === 0) {
     throw new BadRequestError("No fields have been changed");
   }
 
@@ -49,11 +49,22 @@ const updateEntry = async (req, res) => {
     { runValidators: true, new: true }
   );
 
-  res.status(StatusCodes.OK).json({journalEntry})
+  res.status(StatusCodes.OK).json({ journalEntry });
 };
 
 const deleteEntry = async (req, res) => {
-  res.status(StatusCodes.OK).json({ message: "deleteEntry visited" });
+  const { journalEntryId } = req.params;
+
+  const deletedJournalEntry = await JournalEntry.findByIdAndDelete({
+    _id: journalEntryId,
+  });
+
+  res
+    .status(StatusCodes.OK)
+    .json({
+      message: "Journal entry deleted succesfully",
+      deletedJournalEntry,
+    });
 };
 
 module.exports = { getEntries, createEntry, updateEntry, deleteEntry };
