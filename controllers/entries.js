@@ -1,6 +1,6 @@
 const StatusCodes = require("http-status-codes");
 const JournalEntry = require("../models/JournalEntry");
-const { BadRequestError } = require("../errors/index");
+const { BadRequestError,NotFoundError } = require("../errors/index");
 const DayEntry = require("../models/DayEntry");
 
 const getEntries = async (req, res) => {
@@ -49,6 +49,11 @@ const updateEntry = async (req, res) => {
     { runValidators: true, new: true }
   );
 
+  
+  if (!journalEntry) {
+    throw new NotFoundError("Journal entry not found");
+  }
+
   res.status(StatusCodes.OK).json({ journalEntry });
 };
 
@@ -59,12 +64,23 @@ const deleteEntry = async (req, res) => {
     _id: journalEntryId,
   });
 
-  res
-    .status(StatusCodes.OK)
-    .json({
-      message: "Journal entry deleted succesfully",
-      deletedJournalEntry,
-    });
+  if (!deletedJournalEntry) {
+    throw new NotFoundError("Journal entry not found");
+  }
+
+  const { dayId } = deletedJournalEntry;
+
+  const updatedDayEntry = await DayEntry.findByIdAndUpdate(
+    dayId,
+    { $pull: { journalEntries: journalEntryId } },
+    { new: true }
+  );
+
+  res.status(StatusCodes.OK).json({
+    message: "Journal entry deleted succesfully",
+    deletedJournalEntry,
+    updatedDayEntry
+  });
 };
 
 module.exports = { getEntries, createEntry, updateEntry, deleteEntry };
