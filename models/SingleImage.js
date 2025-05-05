@@ -8,7 +8,7 @@ const ImageSchema = new Schema({
     required: true,
     ref: "DayEntry",
   },
-  image: Buffer,
+  imageData: Buffer,
   imageType: String, // e.g., 'image/png'
 });
 
