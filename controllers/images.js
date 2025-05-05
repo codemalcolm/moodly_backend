@@ -1,7 +1,6 @@
 const StatusCodes = require("http-status-codes");
-const JournalEntry = require("../models/JournalEntry")
-const SingleImage = require("../models/SingleImage")
-
+const JournalEntry = require("../models/JournalEntry");
+const SingleImage = require("../models/SingleImage");
 
 const uploadPhoto = async (req, res) => {
   const { journalEntryId } = req.body;
@@ -32,4 +31,23 @@ const uploadPhoto = async (req, res) => {
   });
 };
 
-module.exports = { uploadPhoto };
+const fetchPhotosFromJournalEntryId = async (req, res) => {
+  const { journalEntryId } = req.params;
+
+  const journalEntry = await JournalEntry.findById({ _id: journalEntryId });
+
+  const fetchedImages = await Promise.all(
+    journalEntry.images.map(async (imageId) => {
+      const image = await SingleImage.findById(imageId);
+      return {
+        _id: image._id,
+        imageType: image.imageType,
+        image: image.imageData.toString("base64"),
+      };
+    })
+  );
+
+  res.status(StatusCodes.OK).json({ fetchedImages });
+};
+
+module.exports = { uploadPhoto, fetchPhotosFromJournalEntryId };
