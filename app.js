@@ -1,14 +1,13 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 
 const connectDB = require("./db/connect.js");
 const daysRouter = require("./routes/days.js");
-const entriesRouter = require("./routes/entries.js")
-const imagesRouter = require("./routes/images.js")
+const entriesRouter = require("./routes/entries.js");
+const imagesRouter = require("./routes/images.js");
 
-const errorHandlerMiddleware = require("./middleware/error-handler.js")
+const errorHandlerMiddleware = require("./middleware/error-handler.js");
 
 const app = express();
 app.use(cors()); // allow requests from Flutter
@@ -23,14 +22,14 @@ const port = process.env.PORT || 5000;
 
 app.use("/api/v1/days", daysRouter);
 app.use("/api/v1/entries", entriesRouter);
-app.use("/api/v1/images", imagesRouter)
+app.use("/api/v1/images", imagesRouter);
 
 app.use(errorHandlerMiddleware);
 
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);
-    console.log("Mongo DB connected")
+    console.log("Mongo DB connected");
     app.listen(port, () =>
       console.log(`Server is listening on port http://localhost:${port}...`)
     );
