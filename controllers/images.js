@@ -3,6 +3,42 @@ const JournalEntry = require("../models/JournalEntry");
 const SingleImage = require("../models/SingleImage");
 const { BadRequestError, NotFoundError } = require("../errors");
 
+const uploadMultiplePhotos = async (req, res) => {
+  const { journalEntryId } = req.params;
+
+  if (!journalEntryId) {
+    throw new BadRequestError("Journal entry id missing");
+  }
+
+  const journalEntry = await JournalEntry.findById({ _id: journalEntryId });
+
+  if (!journalEntry) {
+    throw new NotFoundError("Journal entry not found");
+  }
+
+  const uploadedFiles = req.files;
+
+  // saving images to the database one by one
+  const uploadedImages = await Promise.all(
+    uploadedFiles.map((file) =>
+      SingleImage.create({
+        journalEntryId: journalEntryId,
+        imageData: file.buffer,
+        imageType: file.mimetype,
+      })
+    )
+  );
+
+  // saving image ids one by one
+  uploadedImages.forEach((img) => {
+    journalEntry.images.push(img._id);
+  });
+
+  await journalEntry.save();
+
+  res.status(StatusCodes.OK).json({ journalEntry });
+};
+
 const uploadPhoto = async (req, res) => {
   const { journalEntryId } = req.body;
 
@@ -75,4 +111,9 @@ const deletePhoto = async (req, res) => {
   res.status(StatusCodes.OK).json({ deletedPhoto, updatedJournalEntry });
 };
 
-module.exports = { uploadPhoto, fetchPhotosFromJournalEntryId, deletePhoto };
+module.exports = {
+  uploadPhoto,
+  fetchPhotosFromJournalEntryId,
+  deletePhoto,
+  uploadMultiplePhotos,
+};
