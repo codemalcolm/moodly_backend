@@ -3,10 +3,6 @@ const JournalEntry = require("../models/JournalEntry");
 const { BadRequestError,NotFoundError } = require("../errors/index");
 const DayEntry = require("../models/DayEntry");
 
-const getEntries = async (req, res) => {
-  res.status(StatusCodes.OK).json({ message: "getEntries visited" });
-};
-
 const createEntry = async (req, res) => {
   const { entryText, entryDateAndTime, dayId } = req.body;
 
@@ -83,4 +79,4 @@ const deleteEntry = async (req, res) => {
   });
 };
 
-module.exports = { getEntries, createEntry, updateEntry, deleteEntry };
+module.exports = { createEntry, updateEntry, deleteEntry };
