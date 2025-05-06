@@ -33,9 +33,9 @@ const createEntry = async (req, res) => {
 
 const updateEntry = async (req, res) => {
   const { journalEntryId } = req.params;
-  const { name, entryText, images } = req.body;
+  const { name, entryText} = req.body;
 
-  if (!name && !entryText && images.length === 0) {
+  if (!name && !entryText) {
     throw new BadRequestError("No fields have been changed");
   }
 
