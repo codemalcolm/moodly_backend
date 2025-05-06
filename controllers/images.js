@@ -1,6 +1,7 @@
 const StatusCodes = require("http-status-codes");
 const JournalEntry = require("../models/JournalEntry");
 const SingleImage = require("../models/SingleImage");
+const { BadRequestError, NotFoundError } = require("../errors");
 
 const uploadPhoto = async (req, res) => {
   const { journalEntryId } = req.body;
@@ -50,4 +51,28 @@ const fetchPhotosFromJournalEntryId = async (req, res) => {
   res.status(StatusCodes.OK).json({ fetchedImages });
 };
 
-module.exports = { uploadPhoto, fetchPhotosFromJournalEntryId };
+const deletePhoto = async (req, res) => {
+  const { imageId } = req.params;
+
+  const deletedPhoto = await SingleImage.findByIdAndDelete({ _id: imageId });
+
+  if (!deletePhoto) {
+    throw new NotFoundError(`Image with id ${imageId} not found`);
+  }
+
+  const updatedJournalEntry = await JournalEntry.findByIdAndUpdate(
+    deletedPhoto.journalEntryId,
+    { $pull: { images: imageId } },
+    { new: true }
+  );
+
+  if (!updatedJournalEntry) {
+    throw new NotFoundError(
+      `Journal Entry with id ${deletedPhoto.journalEntryId} not found`
+    );
+  }
+
+  res.status(StatusCodes.OK).json({ deletedPhoto, updatedJournalEntry });
+};
+
+module.exports = { uploadPhoto, fetchPhotosFromJournalEntryId, deletePhoto };
