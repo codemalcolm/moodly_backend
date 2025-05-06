@@ -1,6 +1,16 @@
 const StatusCodes = require("http-status-codes");
 const DayEntry = require("../models/DayEntry");
+const JournalEntry = require("../models/JournalEntry");
 
+const getJournalEntries = async (req, res) => {
+  const { dayId } = req.params;
+
+  const journalEntries = await JournalEntry.find({dayId : dayId});
+
+  res.status(StatusCodes.OK).json({ journalEntries });
+};
+
+// FIXME is this even needed if we use date for finding the DayEntry ?
 const getDay = async (req, res) => {
   const { dayId } = req.params;
   const dayEntry = await DayEntry.findOne({ _id: dayId });
@@ -47,4 +57,4 @@ const updateDay = async (req, res) => {
   res.status(StatusCodes.OK).json({ dayEntry });
 };
 
-module.exports = { getDay, createDay, updateDay, getDayByDate };
+module.exports = { getDay, createDay, updateDay, getDayByDate, getJournalEntries };
