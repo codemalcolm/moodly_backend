@@ -2,6 +2,7 @@ const StatusCodes = require("http-status-codes");
 const JournalEntry = require("../models/JournalEntry");
 const { BadRequestError,NotFoundError } = require("../errors/index");
 const DayEntry = require("../models/DayEntry");
+const SingleImage = require("../models/SingleImage");
 
 const createEntry = async (req, res) => {
   const { entryText, entryDateAndTime, dayId } = req.body;
@@ -64,6 +65,10 @@ const deleteEntry = async (req, res) => {
     throw new NotFoundError("Journal entry not found");
   }
 
+  const deletedPhotos = await SingleImage.deleteMany({
+    journalEntryId: journalEntryId,
+  });
+
   const { dayId } = deletedJournalEntry;
 
   const updatedDayEntry = await DayEntry.findByIdAndUpdate(
@@ -75,7 +80,8 @@ const deleteEntry = async (req, res) => {
   res.status(StatusCodes.OK).json({
     message: "Journal entry deleted succesfully",
     deletedJournalEntry,
-    updatedDayEntry
+    updatedDayEntry,
+    deletedPhotos
   });
 };
 
