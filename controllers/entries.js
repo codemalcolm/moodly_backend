@@ -1,11 +1,12 @@
 const StatusCodes = require("http-status-codes");
 const JournalEntry = require("../models/JournalEntry");
-const { BadRequestError,NotFoundError } = require("../errors/index");
+const { BadRequestError, NotFoundError } = require("../errors/index");
 const DayEntry = require("../models/DayEntry");
 const SingleImage = require("../models/SingleImage");
+const { zeroOutDate } = require("../tools/dateChanger");
 
 const createEntry = async (req, res) => {
-  const { entryText, entryDateAndTime, dayId } = req.body;
+  const { entryText, entryDateAndTime } = req.body;
 
   if (!entryText || !entryDateAndTime) {
     throw new BadRequestError(
@@ -13,16 +14,21 @@ const createEntry = async (req, res) => {
     );
   }
 
+  const date = new Date(entryDateAndTime);
+  const zeroedDate = zeroOutDate(date);
+
   const journalEntry = await JournalEntry.create({ ...req.body });
 
-  const updatedDayEntry = await DayEntry.findByIdAndUpdate(
-    dayId,
+  const updatedDayEntry = await DayEntry.findOneAndUpdate(
+    { dayEntryDate: zeroedDate },
     { $push: { journalEntries: journalEntry._id } },
     { new: true }
   );
 
   if (!updatedDayEntry) {
-    throw new BadRequestError(`Day entry with id:${dayId} doesn't exist`);
+    throw new BadRequestError(
+      `Day entry with date: ${zeroedDate} doesn't exist`
+    );
   }
 
   res.status(StatusCodes.OK).json({
@@ -34,7 +40,7 @@ const createEntry = async (req, res) => {
 
 const updateEntry = async (req, res) => {
   const { journalEntryId } = req.params;
-  const { name, entryText} = req.body;
+  const { name, entryText } = req.body;
 
   if (!name && !entryText) {
     throw new BadRequestError("No fields have been changed");
@@ -46,7 +52,6 @@ const updateEntry = async (req, res) => {
     { runValidators: true, new: true }
   );
 
-  
   if (!journalEntry) {
     throw new NotFoundError("Journal entry not found");
   }
@@ -81,7 +86,7 @@ const deleteEntry = async (req, res) => {
     message: "Journal entry deleted succesfully",
     deletedJournalEntry,
     updatedDayEntry,
-    deletedPhotos
+    deletedPhotos,
   });
 };
 
