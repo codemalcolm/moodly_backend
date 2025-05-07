@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose;
 
 const JournalEntrySchema = new Schema({
-  dayId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: 'DayEntry',
-    index: true
-  },
   name: {
     type: String,
     required: false,
@@ -15,7 +9,7 @@ const JournalEntrySchema = new Schema({
   },
   entryText: {
     type: String,
-    required: true,
+    required: false, // TODO make this required but only on creating not on updating
   },
   images: [
     {
