@@ -5,9 +5,18 @@ const JournalEntry = require("../models/JournalEntry");
 const getJournalEntries = async (req, res) => {
   const { dayId } = req.params;
 
-  const journalEntries = await JournalEntry.find({dayId : dayId});
+  const dayEntry = await DayEntry.findById({ _id: dayId });
+  const { journalEntries } = dayEntry;
 
-  res.status(StatusCodes.OK).json({ journalEntries });
+  const journalEntriesDocuments = await Promise.all(
+    journalEntries.map((journalEntryId) =>
+      JournalEntry.findById({
+        _id: journalEntryId,
+      })
+    )
+  );
+
+  res.status(StatusCodes.OK).json({ journalEntries : journalEntriesDocuments });
 };
 
 // FIXME is this even needed if we use date for finding the DayEntry ?
@@ -57,4 +66,10 @@ const updateDay = async (req, res) => {
   res.status(StatusCodes.OK).json({ dayEntry });
 };
 
-module.exports = { getDay, createDay, updateDay, getDayByDate, getJournalEntries };
+module.exports = {
+  getDay,
+  createDay,
+  updateDay,
+  getDayByDate,
+  getJournalEntries,
+};
