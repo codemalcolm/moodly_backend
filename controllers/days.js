@@ -25,14 +25,14 @@ const getDay = async (req, res) => {
 const getDayByDate = async (req, res) => {
   const { date } = req.body;
 
-  const dayEntry = await DayEntry.findOne({ entryDate: date });
+  const dayEntry = await DayEntry.findOne({ dayEntryDate: date });
 
   res.status(StatusCodes.OK).json({ dayEntry });
 };
 
 const createDay = async (req, res) => {
-  const { entryDate } = req.body;
-  if (!entryDate) throw new Error("entryDate not provided");
+  const { dayEntryDate } = req.body;
+  if (!dayEntryDate) throw new Error("entryDate not provided");
 
   const dayEntry = await DayEntry.create({ ...req.body });
 

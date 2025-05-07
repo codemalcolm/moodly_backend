@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const {Schema} = mongoose
 
 const DayEntrySchema = new Schema({
-  entryDate: {
+  dayEntryDate: {
     type: Date,
     required: true,
     index: true 
