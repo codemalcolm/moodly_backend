@@ -39,11 +39,11 @@ router
   .route("/:journalEntryId")
   .put(updateEntry)
   .delete(deleteEntry)
-  .get(fetchPhotosFromJournalEntryId);
+
 router
   .route("/:journalEntryId/images")
-  .post(upload.array("file", 3), uploadMultiplePhotos)
-  .delete(deleteEntry);
+  .post(upload.array("file", 3), uploadMultiplePhotos).get(fetchPhotosFromJournalEntryId);
+
 router.route("/:journalEntryId/images/:imageId").delete(deletePhoto);
 
 module.exports = router;
