@@ -1,6 +1,7 @@
 const StatusCodes = require("http-status-codes");
 const DayEntry = require("../models/DayEntry");
 const JournalEntry = require("../models/JournalEntry");
+const { NotFoundError } = require("../errors");
 
 const getJournalEntries = async (req, res) => {
   const { dayId } = req.params;
@@ -8,15 +9,18 @@ const getJournalEntries = async (req, res) => {
   const dayEntry = await DayEntry.findById({ _id: dayId });
   const { journalEntries } = dayEntry;
 
-  const journalEntriesDocuments = await Promise.all(
-    journalEntries.map((journalEntryId) =>
-      JournalEntry.findById({
-        _id: journalEntryId,
-      })
+  const journalEntriesDocuments = (
+    await Promise.all(
+      journalEntries.map((journalEntryId) =>
+        JournalEntry.findById({ _id: journalEntryId })
+      )
     )
-  );
+  ).filter(Boolean);
 
-  res.status(StatusCodes.OK).json({ journalEntries : journalEntriesDocuments });
+  console.log(journalEntriesDocuments);
+
+
+  res.status(StatusCodes.OK).json({ journalEntries : journalEntriesDocuments == null ? [] : journalEntriesDocuments });
 };
 
 // FIXME is this even needed if we use date for finding the DayEntry ?
@@ -32,16 +36,23 @@ const getDay = async (req, res) => {
 };
 
 const getDayByDate = async (req, res) => {
-  const { date } = req.body;
+  let { date } = req.query;
+
+  date = date.replace(" ", "+")
+  console.log(date);
 
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date });
+  if(!dayEntry){
+    throw new NotFoundError(`Day Entry with the date : ${date} not found`)
+  }
+  console.log(dayEntry)
 
   res.status(StatusCodes.OK).json({ dayEntry });
 };
 
 const createDay = async (req, res) => {
   const { dayEntryDate } = req.body;
-  if (!dayEntryDate) throw new Error("entryDate not provided");
+  if (!dayEntryDate) throw new Error("dayEntryDate not provided");
 
   const dayEntry = await DayEntry.create({ ...req.body });
 
