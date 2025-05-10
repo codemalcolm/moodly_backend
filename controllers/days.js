@@ -41,7 +41,8 @@ const getDayByDate = async (req, res) => {
   date = date.replace(" ", "+")
   console.log(date);
 
-  const dayEntry = await DayEntry.findOne({ dayEntryDate: date });
+  const dayEntry = await DayEntry.findOne({ dayEntryDate: date }).populate('journalEntries');
+  
   if(!dayEntry){
     throw new NotFoundError(`Day Entry with the date : ${date} not found`)
   }
