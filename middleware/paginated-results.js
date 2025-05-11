@@ -2,8 +2,8 @@ function paginatedResults(model) {
   return async (req, res, next) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
+    const sortQuery = req.query.sort;
 
-    console.log(page, limit);
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
@@ -22,10 +22,32 @@ function paginatedResults(model) {
         limit: limit,
       };
     }
+
+    let sortOptions = {};
+    if (sortQuery) {
+      const direction = sortQuery[0]; // '+' or '-'
+      const field = sortQuery.slice(1); // field name of document
+
+      // Validate field exists in schema
+      if (!model.schema.paths[field]) {
+        return res.status(400).json({
+          error: `Cannot sort by unknown field: ${field}`,
+        });
+      }
+
+      sortOptions[field] = direction === '-' ? -1 : 1;
+    }
+
     try {
-      results.results = await model.find().limit(limit).skip(startIndex).exec();
+      let query = model.find();
+
+      if (Object.keys(sortOptions).length > 0) {
+        query = query.sort(sortOptions);
+      }
+
+      results.results = await query.limit(limit).skip(startIndex).exec();
     } catch (error) {
-      throw new Error(error);
+      return res.status(500).json({ error: error.message });
     }
 
     res.paginatedResults = results;
