@@ -5,6 +5,10 @@ const DayEntry = require("../models/DayEntry");
 const SingleImage = require("../models/SingleImage");
 const { zeroOutDate } = require("../tools/dateChanger");
 
+const getEveryJournalEntry = async (req, res) => {
+  res.json(res.paginatedResults);
+};
+
 const createEntry = async (req, res) => {
   const { entryText, entryDateAndTime } = req.body;
 
@@ -90,4 +94,10 @@ const deleteEntry = async (req, res) => {
   });
 };
 
-module.exports = { createEntry, updateEntry, deleteEntry };
+
+module.exports = {
+  createEntry,
+  updateEntry,
+  deleteEntry,
+  getEveryJournalEntry,
+};
