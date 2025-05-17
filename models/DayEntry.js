@@ -8,9 +8,9 @@ const DayEntrySchema = new Schema({
     index: true 
   },
   mood: {
-    type: String,
-    enum: ["happy", "sad", "neutral", "angry", "anxious", "excited", "unfilled"], // adjust later
-    default: "unfilled",
+    type: Number,
+    enum: [-1,0,1,2,3,4,5,6,7,8], // adjust later
+    default: -1,
     required: true,
   },
   dailyTasks: [
