@@ -4,6 +4,7 @@ const router = express.Router();
 const { getDay, createDay, updateDay, getDayByDate,getJournalEntries } = require("../controllers/days");
 
 router.route("/").post(createDay).get(getDayByDate);
-router.route("/:dayId").get(getJournalEntries).put(updateDay);
+router.route("/:dayId").patch(updateDay);
+router.route("/:dayId/entries").get(getJournalEntries);
 
 module.exports = router;
