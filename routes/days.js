@@ -8,6 +8,6 @@ router.route("/").post(createDay).get(getDayByDate);
 router.route("/:dayId").patch(updateDay);
 router.route("/:dayId/entries").get(getJournalEntries);
 router.route("/:dayId/daily-tasks").post(createDailyTask);
-router.route("/:dayId/daily-tasks/:dailyTaskId").get(createDailyTask);
+router.route("/:dayId/daily-tasks/:dailyTaskId").patch(updateDailyTask);
 
 module.exports = router;
