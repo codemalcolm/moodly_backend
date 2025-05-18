@@ -1,10 +1,26 @@
 const express = require("express");
 const router = express.Router();
+const DayEntry = require("../models/DayEntry.js");
 
-const { getDay, createDay, updateDay, getDayByDate,getJournalEntries } = require("../controllers/days");
-const { createDailyTask,updateDailyTask,deleteDailyTask } = require("../controllers/daily-tasks");
+const {
+  getDay,
+  createDay,
+  updateDay,
+  getDayByDate,
+  getJournalEntries,
+  getAllDayEntries,
+} = require("../controllers/days");
+const {
+  createDailyTask,
+  updateDailyTask,
+  deleteDailyTask,
+} = require("../controllers/daily-tasks");
+const paginatedResults = require("../middleware/paginated-results.js");
 
 router.route("/").post(createDay).get(getDayByDate);
+router
+  .route("/all")
+  .get(paginatedResults(DayEntry, ["journalEntries"]), getAllDayEntries);
 router.route("/:dayId").patch(updateDay);
 router.route("/:dayId/entries").get(getJournalEntries);
 router.route("/:dayId/daily-tasks").post(createDailyTask);
