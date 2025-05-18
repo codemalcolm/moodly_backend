@@ -1,7 +1,7 @@
 const StatusCodes = require("http-status-codes");
 const DailyTask = require("../models/DailyTask");
 const DayEntry = require("../models/DayEntry");
-const { BadRequestError } = require("../errors");
+const { BadRequestError, NotFoundError } = require("../errors");
 
 const createDailyTask = async (req, res) => {
   const { name } = req.body;
@@ -29,23 +29,26 @@ const updateDailyTask = async (req, res) => {
   const { name, isDone } = req.body;
 
   if (!dailyTaskId && !dayId) {
-    BadRequestError("Day id or task id missing");
+    throw new BadRequestError("Day id or task id missing");
   }
 
-  if (!name && !isDone) {
-    BadRequestError("Name of daily task missing");
+  if (!name && isDone == undefined) {
+    throw new BadRequestError("Name of Daily task or isDone field is missing");
   }
 
-  console.log(req.body);
-
-  const updatedDailyTask = await DailyTask.findByIdAndUpdate(
-    { _id : dailyTaskId },
+  const updatedDailyTask = await DailyTask.findOneAndUpdate(
+    { _id: dailyTaskId },
     { ...req.body },
     { runValidators: true, new: true }
   );
 
+  if (!updatedDailyTask) {
+    throw new NotFoundError(`Now daily task with that id : ${dailyTaskId}`);
+  }
+
   res.status(StatusCodes.OK).json({ updatedDailyTask });
 };
+
 const deleteDailyTask = async (req, res) => {
   const { dailyTaskId } = req.params;
   res.send(dailyTaskId);
