@@ -1,4 +1,4 @@
-function paginatedResults(model) {
+function paginatedResults(model, populateOptions = []) {
   return async (req, res, next) => {
     const page = parseInt(req.query.page);
     const limit = parseInt(req.query.limit);
@@ -9,7 +9,7 @@ function paginatedResults(model) {
 
     const results = {};
 
-    if (endIndex < await model.countDocuments().exec()) {
+    if (endIndex < (await model.countDocuments().exec())) {
       results.next = {
         page: page + 1,
         limit: limit,
@@ -35,7 +35,7 @@ function paginatedResults(model) {
         });
       }
 
-      sortOptions[field] = direction === '-' ? -1 : 1;
+      sortOptions[field] = direction === "-" ? -1 : 1;
     }
 
     try {
@@ -43,6 +43,13 @@ function paginatedResults(model) {
 
       if (Object.keys(sortOptions).length > 0) {
         query = query.sort(sortOptions);
+      }
+
+      // Applying population if popilateOptions are provided
+      if (populateOptions && populateOptions.length > 0) {
+        populateOptions.forEach((option) => {
+          query = query.populate(option);
+        });
       }
 
       results.results = await query.limit(limit).skip(startIndex).exec();
