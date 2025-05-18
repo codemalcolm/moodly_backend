@@ -19,8 +19,12 @@ const getJournalEntries = async (req, res) => {
 
   console.log(journalEntriesDocuments);
 
-
-  res.status(StatusCodes.OK).json({ journalEntries : journalEntriesDocuments == null ? [] : journalEntriesDocuments });
+  res
+    .status(StatusCodes.OK)
+    .json({
+      journalEntries:
+        journalEntriesDocuments == null ? [] : journalEntriesDocuments,
+    });
 };
 
 // FIXME is this even needed if we use date for finding the DayEntry ?
@@ -38,15 +42,17 @@ const getDay = async (req, res) => {
 const getDayByDate = async (req, res) => {
   let { date } = req.query;
 
-  date = date.replace(" ", "+")
+  date = date.replace(" ", "+");
   console.log(date);
 
-  const dayEntry = await DayEntry.findOne({ dayEntryDate: date }).populate("journalEntries").populate("dailyTasks");
-  
-  if(!dayEntry){
-    throw new NotFoundError(`Day Entry with the date : ${date} not found`)
+  const dayEntry = await DayEntry.findOne({ dayEntryDate: date })
+    .populate("journalEntries")
+    .populate("dailyTasks");
+
+  if (!dayEntry) {
+    throw new NotFoundError(`Day Entry with the date : ${date} not found`);
   }
-  console.log(dayEntry)
+  console.log(dayEntry);
 
   res.status(StatusCodes.OK).json({ dayEntry });
 };
@@ -78,10 +84,15 @@ const updateDay = async (req, res) => {
   res.status(StatusCodes.OK).json({ dayEntry });
 };
 
+const getAllDayEntries = async (req, res) => {
+  res.json(res.paginatedResults);
+};
+
 module.exports = {
   getDay,
   createDay,
   updateDay,
   getDayByDate,
   getJournalEntries,
+  getAllDayEntries,
 };
