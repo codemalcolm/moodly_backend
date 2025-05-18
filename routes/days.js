@@ -24,6 +24,6 @@ router
 router.route("/:dayId").patch(updateDay);
 router.route("/:dayId/entries").get(getJournalEntries);
 router.route("/:dayId/daily-tasks").post(createDailyTask);
-router.route("/:dayId/daily-tasks/:dailyTaskId").patch(updateDailyTask);
+router.route("/:dayId/daily-tasks/:dailyTaskId").patch(updateDailyTask).delete(deleteDailyTask);
 
 module.exports = router;

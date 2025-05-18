@@ -51,7 +51,12 @@ const updateDailyTask = async (req, res) => {
 
 const deleteDailyTask = async (req, res) => {
   const { dailyTaskId } = req.params;
-  res.send(dailyTaskId);
+
+  const deletedDailyTask = await DailyTask.findOneAndDelete({
+    _id: dailyTaskId,
+  });
+
+  res.status(StatusCodes.OK).json({ deletedDailyTask });
 };
 
 module.exports = {
