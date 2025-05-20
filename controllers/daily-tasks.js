@@ -50,11 +50,18 @@ const updateDailyTask = async (req, res) => {
 };
 
 const deleteDailyTask = async (req, res) => {
-  const { dailyTaskId } = req.params;
+  const { dayId, dailyTaskId } = req.params;
 
   const deletedDailyTask = await DailyTask.findOneAndDelete({
     _id: dailyTaskId,
   });
+
+   await DayEntry.findByIdAndUpdate(
+      dayId,
+      { $pull: { dailyTasks: dailyTaskId } },
+      { new: true }
+    );
+  
 
   res.status(StatusCodes.OK).json({ deletedDailyTask });
 };
