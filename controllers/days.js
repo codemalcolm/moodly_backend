@@ -19,18 +19,18 @@ const getJournalEntries = async (req, res) => {
 
   console.log(journalEntriesDocuments);
 
-  res
-    .status(StatusCodes.OK)
-    .json({
-      journalEntries:
-        journalEntriesDocuments == null ? [] : journalEntriesDocuments,
-    });
+  res.status(StatusCodes.OK).json({
+    journalEntries:
+      journalEntriesDocuments == null ? [] : journalEntriesDocuments,
+  });
 };
 
 // FIXME is this even needed if we use date for finding the DayEntry ?
 const getDay = async (req, res) => {
   const { dayId } = req.params;
-  const dayEntry = await DayEntry.findOne({ _id: dayId }).populate("dailyTasks");
+  const dayEntry = await DayEntry.findOne({ _id: dayId }).populate(
+    "dailyTasks"
+  );
 
   if (!dayEntry) {
     throw new Error(`Day with id : ${dayId} not found`);
@@ -46,7 +46,10 @@ const getDayByDate = async (req, res) => {
   console.log(date);
 
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date })
-    .populate("journalEntries")
+    .populate({
+      path: "journalEntries",
+      populate: { path: "images", model: "SingleImage" },
+    })
     .populate("dailyTasks");
 
   if (!dayEntry) {
