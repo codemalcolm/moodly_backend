@@ -48,16 +48,32 @@ const getDayByDate = async (req, res) => {
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date })
     .populate({
       path: "journalEntries",
-      populate: { path: "images", model: "SingleImage" },
+      populate: {
+        path: "images",
+        model: "SingleImage",
+      },
     })
-    .populate("dailyTasks");
+    .populate("dailyTasks")
+    .lean();
 
-  if (!dayEntry) {
-    throw new NotFoundError(`Day Entry with the date : ${date} not found`);
+  if (dayEntry && dayEntry.journalEntries) {
+    dayEntry.journalEntries.forEach((journalEntry) => {
+      if (journalEntry.images) {
+        journalEntry.images.forEach((image) => {
+          if (image.imageData && image.imageData.data) {
+            // Convert Buffer to base64 string
+            image.base64Image = Buffer.from(image.imageData.data).toString(
+              "base64"
+            );
+            // no need for binary data on the FE
+            delete image.imageData;
+          }
+        });
+      }
+    });
   }
-  console.log(dayEntry);
 
-  res.status(StatusCodes.OK).json({ dayEntry });
+  res.json({ dayEntry });
 };
 
 const createDay = async (req, res) => {
