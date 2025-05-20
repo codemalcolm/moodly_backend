@@ -22,7 +22,6 @@ const port = process.env.PORT || 5000;
 
 app.use("/api/v1/days", daysRouter);
 app.use("/api/v1/entries", entriesRouter);
-app.use("/api/v1/daily-tasks", dailyTasksRouter)
 
 app.use(errorHandlerMiddleware);
 
