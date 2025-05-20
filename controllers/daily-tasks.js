@@ -15,13 +15,13 @@ const createDailyTask = async (req, res) => {
 
   const dailyTask = await DailyTask.create({ ...req.body });
 
-  const updatedDayEntry = await DayEntry.findOneAndUpdate(
+  await DayEntry.findOneAndUpdate(
     { _id: dayId },
     { $push: { dailyTasks: dailyTask._id } },
     { new: true }
   );
 
-  res.status(StatusCodes.OK).json({ updatedDayEntry });
+  res.status(StatusCodes.OK).json({ dailyTask });
 };
 
 const updateDailyTask = async (req, res) => {
