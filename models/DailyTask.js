@@ -7,8 +7,8 @@ const DailyTaskSchema = new mongoose.Schema({
   },
   isDone: {
     type: Boolean,
-    enum: ["happy", "sad", "neutral", "angry", "anxious", "excited"], // adjust later
-    required: false,
+    enum:[true,false],
+    required: true,
   },
 });
 
