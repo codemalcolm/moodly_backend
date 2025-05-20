@@ -30,7 +30,7 @@ const getJournalEntries = async (req, res) => {
 // FIXME is this even needed if we use date for finding the DayEntry ?
 const getDay = async (req, res) => {
   const { dayId } = req.params;
-  const dayEntry = await DayEntry.findOne({ _id: dayId });
+  const dayEntry = await DayEntry.findOne({ _id: dayId }).populate("dailyTasks");
 
   if (!dayEntry) {
     throw new Error(`Day with id : ${dayId} not found`);
