@@ -40,7 +40,6 @@ const getDayByDate = async (req, res) => {
   let { date } = req.query;
 
   date = date.replace(" ", "+");
-  console.log(date);
 
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date })
     .populate({
