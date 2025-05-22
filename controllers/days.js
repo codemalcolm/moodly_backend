@@ -40,6 +40,7 @@ const getDayByDate = async (req, res) => {
   let { date } = req.query;
 
   date = date.replace(" ", "+");
+  console.log(date);
 
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date })
     .populate({
@@ -53,26 +54,33 @@ const getDayByDate = async (req, res) => {
     .lean();
 
   if (dayEntry && dayEntry.journalEntries) {
-    // default desc sort
-    dayEntry.journalEntries.sort((a, b) => {
-      const dateA = new Date(a.entryDateAndTime);
-      const dateB = new Date(b.entryDateAndTime);
-      return dateA.getTime() - dateB.getTime();
-    });
 
     dayEntry.journalEntries.forEach((journalEntry) => {
-      if (journalEntry.images) {
+      if (journalEntry.images && Array.isArray(journalEntry.images)) {
         journalEntry.images.forEach((image) => {
-          if (image.imageData && image.imageData.data) {
-            // Convert Buffer to base64 string
-            image.base64Image = Buffer.from(image.imageData.data).toString(
-              "base64"
-            );
-            // no need for binary data on the FE
+
+          if (image.imageData instanceof Buffer) {
+            image.base64Image = image.imageData.toString("base64");
+
             delete image.imageData;
+          }
+
+          else if (image.imageData && image.imageData.data && Array.isArray(image.imageData.data)) {
+             image.base64Image = Buffer.from(image.imageData.data).toString("base64");
+             delete image.imageData; 
           }
         });
       }
+    });
+
+    dayEntry.journalEntries.sort((a, b) => {
+      const dateA = new Date(a.entryDateAndTime);
+      const dateB = new Date(b.entryDateAndTime);
+
+      if (isNaN(dateA.getTime())) return 1;
+      if (isNaN(dateB.getTime())) return -1;
+
+      return dateB.getTime() - dateA.getTime();
     });
   }
 
