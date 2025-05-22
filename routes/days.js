@@ -9,6 +9,7 @@ const {
   getDayByDate,
   getJournalEntries,
   getAllDayEntries,
+  getDayMoodByDate,
 } = require("../controllers/days");
 const {
   createDailyTask,
@@ -18,6 +19,7 @@ const {
 const paginatedResults = require("../middleware/paginated-results.js");
 
 router.route("/").post(createDay).get(getDayByDate);
+router.route("/mood").get(getDayMoodByDate);
 router.route("/all").get(
   paginatedResults(DayEntry, [
     {
