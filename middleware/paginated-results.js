@@ -21,7 +21,7 @@ function paginatedResults(model, populateOptions = []) {
             error: `Cannot sort by unknown field: ${field}`,
           });
         }
-        sortOptions[field] = direction === "-" ? 1 : -1;
+        sortOptions[field] = direction === "-" ? -1 : 1;
       }
 
       let query = model.find().sort(sortOptions);
