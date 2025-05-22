@@ -17,15 +17,12 @@ const getJournalEntries = async (req, res) => {
     )
   ).filter(Boolean);
 
-  console.log(journalEntriesDocuments);
-
   res.status(StatusCodes.OK).json({
     journalEntries:
       journalEntriesDocuments == null ? [] : journalEntriesDocuments,
   });
 };
 
-// FIXME is this even needed if we use date for finding the DayEntry ?
 const getDay = async (req, res) => {
   const { dayId } = req.params;
   const dayEntry = await DayEntry.findOne({ _id: dayId }).populate(
@@ -43,7 +40,6 @@ const getDayByDate = async (req, res) => {
   let { date } = req.query;
 
   date = date.replace(" ", "+");
-  console.log(date);
 
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date })
     .populate({
@@ -57,7 +53,7 @@ const getDayByDate = async (req, res) => {
     .lean();
 
   if (dayEntry && dayEntry.journalEntries) {
-    // default desc sort 
+    // default desc sort
     dayEntry.journalEntries.sort((a, b) => {
       const dateA = new Date(a.entryDateAndTime);
       const dateB = new Date(b.entryDateAndTime);
@@ -118,7 +114,6 @@ const getDayMoodByDate = async (req, res) => {
   let { date } = req.query;
 
   date = date.replace(" ", "+");
-  console.log(date);
 
   const dayEntry = await DayEntry.findOne({ dayEntryDate: date });
   res.status(StatusCodes.OK).json({ dayEntry });

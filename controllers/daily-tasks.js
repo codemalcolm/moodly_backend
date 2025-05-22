@@ -7,8 +7,6 @@ const createDailyTask = async (req, res) => {
   const { name } = req.body;
   const { dayId } = req.params;
 
-  console.log(name, dayId);
-
   if (!name && !dayId) {
     BadRequestError("Name of daily task missing");
   }
@@ -56,12 +54,11 @@ const deleteDailyTask = async (req, res) => {
     _id: dailyTaskId,
   });
 
-   await DayEntry.findByIdAndUpdate(
-      dayId,
-      { $pull: { dailyTasks: dailyTaskId } },
-      { new: true }
-    );
-  
+  await DayEntry.findByIdAndUpdate(
+    dayId,
+    { $pull: { dailyTasks: dailyTaskId } },
+    { new: true }
+  );
 
   res.status(StatusCodes.OK).json({ deletedDailyTask });
 };

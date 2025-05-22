@@ -9,7 +9,7 @@ const JournalEntrySchema = new Schema({
   },
   entryText: {
     type: String,
-    required: false, // TODO make this required but only on creating not on updating
+    required: true, 
   },
   images: [
     {
