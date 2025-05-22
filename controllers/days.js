@@ -57,6 +57,13 @@ const getDayByDate = async (req, res) => {
     .lean();
 
   if (dayEntry && dayEntry.journalEntries) {
+    // default desc sort 
+    dayEntry.journalEntries.sort((a, b) => {
+      const dateA = new Date(a.entryDateAndTime);
+      const dateB = new Date(b.entryDateAndTime);
+      return dateA.getTime() - dateB.getTime();
+    });
+
     dayEntry.journalEntries.forEach((journalEntry) => {
       if (journalEntry.images) {
         journalEntry.images.forEach((image) => {
@@ -107,6 +114,16 @@ const getAllDayEntries = async (req, res) => {
   res.json(res.paginatedResults);
 };
 
+const getDayMoodByDate = async (req, res) => {
+  let { date } = req.query;
+
+  date = date.replace(" ", "+");
+  console.log(date);
+
+  const dayEntry = await DayEntry.findOne({ dayEntryDate: date });
+  res.status(StatusCodes.OK).json({ dayEntry });
+};
+
 module.exports = {
   getDay,
   createDay,
@@ -114,4 +131,5 @@ module.exports = {
   getDayByDate,
   getJournalEntries,
   getAllDayEntries,
+  getDayMoodByDate,
 };
